@@ -5,7 +5,7 @@
     Copyright 2012 
 
     Authors:
-        Giuseppe Rizzo <giuseppe.rizzo@eurecom.fr>
+        Giuseppe Rizzo <giuse.rizzo@gmail.com>
         Pierre-Antoine Champin <pierre-antoine.champin@liris.cnrs.fr>
 
     This program is free software; you can redistribute it and/or modify it
