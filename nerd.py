@@ -29,12 +29,12 @@ except ImportError:
 class NERD(object):
     """Connection to the NERD service.
     """
-    def __init__(self, api_key, user_agent=None):
+    def __init__(self, endpoint, api_key, user_agent=None):
+        self.http = HTTPConnection(endpoint)
         self.api_key = api_key
-        self.http = HTTPConnection("nerd.eurecom.fr")
 
         if user_agent is None:
-            user_agent = "NERD python library 0.2"
+            user_agent = "NERD python library 0.5"
         self._headers = {
             "content-type": "application/x-www-form-urlencoded",
             "accept": "application/json",
@@ -51,7 +51,7 @@ class NERD(object):
         self.http.request("POST", "/api/document",
                           urlencode({"text": text, 
                                      "key": self.api_key}),
-                          self._headers,
+                          self._headers
                           )
         response = self.http.getresponse()
         if response.status / 100 != 2:
@@ -63,11 +63,12 @@ class NERD(object):
 
 
         """ annotate document """
-        self.http.request("POST", "/api/annotation/%s" % service,
-                          urlencode({"idDocument": id_document,
+        self.http.request("POST", "/api/annotation",
+                          urlencode({"extractor": service,
+                                     "idDocument": id_document,
                                      "language": language,
                                      "key": self.api_key}),
-                          self._headers,
+                          self._headers
                           )
         
         response = self.http.getresponse()
@@ -76,12 +77,12 @@ class NERD(object):
         json = response.read()
         _debug(response, json)
         data = json_loads(json)
-        id_extraction = data["idExtraction"]
+        id_annotation = data["idAnnotation"]
 
 
         """ get extraction from the annotation """
-        self.http.request("GET", "/api/extraction/%s" % id_extraction + "?key=%s" % self.api_key,
-                          headers = self._headers,
+        self.http.request("GET", "/api/extraction" + "?key=%s&idAnnotation=%s" % (self.api_key,id_annotation),
+                          headers = self._headers
                           )
         response = self.http.getresponse()
         if response.status / 100 != 2:
@@ -104,9 +105,10 @@ ALCHEMYAPI = "alchemyapi"
 DBPEDIA_SPOTLIGHT = "spotlight"
 EVRI = "evri"
 EXTRACTIV = "extractiv"
-ONTOTEXT_LUPEDIA = "ontotext"
+LUPEDIA = "lupedia"
 OPENCALAIS = "opencalais"
 SAPLO = "saplo"
 WIKIMETA = "wikimeta"
 YAHOO = "yahoo"
 ZEMANTA = "zemanta"
+COMBINED = "combined"
