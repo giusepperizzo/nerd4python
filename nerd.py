@@ -42,7 +42,7 @@ class NERD(object):
             }
 
 
-    def extract(self, text, service):
+    def extract(self, text, service, timeout):
         """Extract named entities from document with 'service'.        
         'service' can be any of the constants defined in this module.
         """
@@ -66,6 +66,7 @@ class NERD(object):
         self.http.request("POST", "/api/annotation",
                           urlencode({"extractor": service,
                                      "idDocument": id_document,
+                                     "timeout": timeout,
                                      "key": self.api_key}),
                           self._headers
                           )
@@ -80,7 +81,7 @@ class NERD(object):
 
 
         """ get extraction from the annotation """
-        self.http.request("GET", "/api/extraction" + "?key=%s&idAnnotation=%s" % (self.api_key,id_annotation),
+        self.http.request("GET", "/api/entity" + "?key=%s&idAnnotation=%s" % (self.api_key,id_annotation),
                           headers = self._headers
                           )
         response = self.http.getresponse()
@@ -101,8 +102,7 @@ def _debug(response, body):
     print body, "<<<"
 
 ALCHEMYAPI = "alchemyapi"
-DBPEDIA_SPOTLIGHT = "dbspotlight"
-EVRI = "evri"
+DBSPOTLIGHT = "dbspotlight"
 EXTRACTIV = "extractiv"
 LUPEDIA = "lupedia"
 OPENCALAIS = "opencalais"
