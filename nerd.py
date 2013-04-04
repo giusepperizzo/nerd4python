@@ -1,6 +1,6 @@
 """
-    nerd4python -   A python library which provides an interface to NERD
-                    http://nerd.eurecom.fr
+    nerd4python -   A python library which provides an interface to the NERD API
+                    http://nerd.eurecom.fr/api
 
     Copyright 2012 
 
