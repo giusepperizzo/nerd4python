@@ -15,8 +15,9 @@
     original distribution for details. There is ABSOLUTELY NO warranty.    
 """
 
-from httplib import HTTPConnection
-from urllib import urlencode
+from __future__ import print_function
+from http.client import HTTPConnection
+from future.moves.urllib.parse import urlencode
 from warnings import warn
 
 try:
@@ -42,23 +43,22 @@ class NERD(object):
             }
 
 
-    def extract(self, text, service, timeout):
+    def extract(self, text, service, timeout, mode="text"):
         """Extract named entities from document with 'service'.        
         'service' can be any of the constants defined in this module.
         """
 
         """ submit document """
         self.http.request("POST", "/api/document",
-                          urlencode({"text": text, 
+                          urlencode({ mode: text, 
                                      "key": self.api_key}),
                           self._headers
                           )
         response = self.http.getresponse()
-        if response.status / 100 != 2:
+        if int(response.status/100) != 2:
             raise Exception("%s %s" % (response.status, response.reason))
         json = response.read()
-        _debug(response, json)
-        data = json_loads(json)
+        data = json_loads(json.decode("utf-8"))
         id_document = data["idDocument"]
 
 
@@ -70,36 +70,33 @@ class NERD(object):
                                      "key": self.api_key}),
                           self._headers
                           )
-        
         response = self.http.getresponse()
-        if response.status / 100 != 2:
+        if int(response.status/100) != 2:
             raise Exception("%s %s" % (response.status, response.reason))
         json = response.read()
-        _debug(response, json)
-        data = json_loads(json)
+        data = json_loads(json.decode("utf-8"))
         id_annotation = data["idAnnotation"]
-
-
+        
+        
         """ get extraction from the annotation """
         self.http.request("GET", "/api/entity" + "?key=%s&idAnnotation=%s" % (self.api_key,id_annotation),
                           headers = self._headers
                           )
         response = self.http.getresponse()
-        if response.status / 100 != 2:
+        if int(response.status/100) != 2:
             raise Exception("%s %s" % (response.status, response.reason))
-        json = response.read()
-        _debug(response, json)
+        json = response.read().decode("utf-8")
         data = json_loads(json)
         return data
 
 def _debug(response, body):
     """Print response headers and body for debug.
     """
-    print ">>>", response.status, response.reason,
+    print(">>>", response.status, response.reason, end=' ')
     for h in response.getheaders():
-        print h
-    print
-    print body, "<<<"
+        print(h)
+    print()
+    print(body, "<<<")
 
 ALCHEMYAPI = "alchemyapi"
 DBSPOTLIGHT = "dbspotlight"
